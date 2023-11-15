@@ -128,7 +128,13 @@ int main(void)
   /*** Configure GPIOs ***/
   GPIOD->MODER = 0x55555555; // set all Port D pins to outputs
   GPIOE->MODER |= 0x55555555;
+  GPIOA->MODER |= 0x000000FF;
   GPIOE->OTYPER |= 0xFF00;
+
+  //Configure ADC1
+  RCC->APB2ENR |= 1<<8;
+  ADC1->SMPR2 |= 1;
+  ADC1->CR2 |= 1;
   /*****************************************************************************************************
   These commands are handled as part of the MX_TIM7_Init() function and don't need to be enabled:
   RCC->AHB1ENR |= 1<<5; // Enable clock for timer 7
@@ -150,21 +156,31 @@ int main(void)
 
   while (1)
   {
-	  Seven_Segment(0xDEADBEEF);
+	  Seven_Segment(0x5AFE0000);
+
+	  ADC1->SQR3 = 1;
+	  ADC1->CR2 |= 1<<30;
+
+	  int myVar = ADC1->DR;
+
+	  /*We need to make a range to switch to switch so there are only
+	   * 2 LEDS on at once....*/
+	  if(myVar > 2000){
+		  GPIOD->ODR = 0xff00;
+	  } else {
+		  GPIOD->ODR = 0x00ff;
+	  }
 
 	  int i;
 
-
+	  //The rightmost LED is in use by the Piezo buzzer, don't heck with it yo
 	  /* play the tune defined in the array Song */
-	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
-	  {
-		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
-		  //Play_Note(Song[i][0],Song[i][1],2000,Song[i][2]);
-		  //Play_Note(Song[i],_8th,1500,2); // Call function to play each note
-		  //Play_Note(Song[i][0],Song[i][1],2000,Song[i][2]);
-	  }
+//	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
+//	  {
+//		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+//	  }
 
-	  HAL_Delay(1000); // Delay for 1000 milliseconds (1 second)
+//	  HAL_Delay(1000); // Delay for 1000 milliseconds (1 second)
 
     /* USER CODE END WHILE */
 
