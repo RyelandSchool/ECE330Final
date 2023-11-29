@@ -122,6 +122,29 @@ int beeg(int song[NUM_NOTES][NUM_DESCRIPTORS]){
 	return beegest;
 }
 
+int display(int myVar, int incr, int smallest){
+	if(myVar == 0){
+		return -1;
+	}
+    if(myVar < incr+smallest){
+    	return 0;
+	} else if (myVar <= incr*2+smallest){
+    	return 1;
+	} else if (myVar <= incr*3+smallest){
+    	return 2;
+	} else if (myVar <= incr*4+smallest){
+    	return 3;
+	} else if (myVar <= incr*5+smallest){
+    	return 4;
+	} else if (myVar <= incr*6+smallest){
+    	return 5;
+	} else if (myVar <= incr*7+smallest){
+    	return 6;
+	} else {
+    	return 7;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -182,6 +205,8 @@ int main(void)
   int smallest = smol(Song);
   int biggest = beeg(Song);
 
+
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -196,26 +221,26 @@ int main(void)
 	  /* play the tune defined in the array Song */
 	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
 	  {
-		  int myVar = Song[i][0];
-			if(myVar < incr+smallest){
-				Seven_Segment(0x00000001);
-			} else if (myVar <= incr*2+smallest){
-				Seven_Segment(0x00000020);
-			} else if (myVar <= incr*3+smallest){
-				Seven_Segment(0x00000300);
-			} else if (myVar <= incr*4+smallest){
-				Seven_Segment(0x00004000);
-			} else if (myVar <= incr*5+smallest){
-				Seven_Segment(0x00050000);
-			} else if (myVar <= incr*6+smallest){
-				Seven_Segment(0x00600000);
-			} else if (myVar <= incr*7+smallest){
-				Seven_Segment(0x07000000);
-			} else {
-				Seven_Segment(0x80000000);
-			}
-		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+		  //FIXME: When there are two notes in the same spot, it gets buggy
+		  //FIXME: Also, the lines below will cause indexing errors!
+	      int myVar = Song[i][0];
+		  int next1 = Song[i+1][0];
+		  int next2 = Song[i+2][0];
+		  int next3 = Song[i+3][0];
 
+		  int pos = display(myVar, incr, smallest);
+		  int pos1 = display(next1, incr, smallest);
+		  int pos2 = display(next2, incr, smallest);
+		  int pos3 = display(next3, incr, smallest);
+
+		  Seven_Segment(0x0);
+		  Seven_Segment_Digit(pos, 0xb);
+		  Seven_Segment_Digit(pos1, 0x1);
+		  Seven_Segment_Digit(pos2, 0x2);
+		  Seven_Segment_Digit(pos3, 0x3);
+
+		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+//		  HAL_Delay(1000);
 	  }
 
     /* USER CODE END WHILE */
