@@ -163,12 +163,32 @@ int main(void)
 
 	  int myVar = ADC1->DR;
 
-	  /*We need to make a range to switch to switch so there are only
+	  /*We need to make a range to switch so there are only
 	   * 2 LEDS on at once....*/
-	  if(myVar > 2000){
-		  GPIOD->ODR = 0xff00;
-	  } else {
-		  GPIOD->ODR = 0x00ff;
+//	  if(myVar > 2000){
+//		  GPIOD->ODR = 0xff00;
+//	  } else {
+//		  GPIOD->ODR = 0x00ff;
+//	  }
+
+	   // Moving the paddle around based on ADC movement
+	  const int DELIM = 512;
+	  if(myVar > 0 && myVar < DELIM){
+		  GPIOD->ODR = 3;
+	  } else if (myVar < DELIM*2){
+		  GPIOD->ODR = 3<<2;
+	  } else if (myVar < DELIM*3){
+		  GPIOD->ODR = 3<<4;
+	  } else if (myVar < DELIM*4){
+		  GPIOD->ODR = 3<<6;
+	  } else if (myVar < DELIM*5){
+		  GPIOD->ODR = 3<<8;
+	  } else if (myVar < DELIM*6){
+		  GPIOD->ODR = 3<<10;
+	  } else if (myVar < DELIM*7){
+		  GPIOD->ODR = 3<<12;
+	  } else if (myVar < DELIM*8){
+		  GPIOD->ODR = 3<<14;
 	  }
 
 	  int i;
