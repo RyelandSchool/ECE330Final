@@ -85,10 +85,10 @@ int Song[100][3] =
 		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
 		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
-		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
-		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
-		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
-		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
+//		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
+//		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
+//		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
+//		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
 };
 
@@ -172,33 +172,16 @@ int main(void)
 //	  }
 
 	   // Moving the paddle around based on ADC movement
-	  const int DELIM = 512;
-	  if(myVar > 0 && myVar < DELIM){
-		  GPIOD->ODR = 3;
-	  } else if (myVar < DELIM*2){
-		  GPIOD->ODR = 3<<2;
-	  } else if (myVar < DELIM*3){
-		  GPIOD->ODR = 3<<4;
-	  } else if (myVar < DELIM*4){
-		  GPIOD->ODR = 3<<6;
-	  } else if (myVar < DELIM*5){
-		  GPIOD->ODR = 3<<8;
-	  } else if (myVar < DELIM*6){
-		  GPIOD->ODR = 3<<10;
-	  } else if (myVar < DELIM*7){
-		  GPIOD->ODR = 3<<12;
-	  } else if (myVar < DELIM*8){
-		  GPIOD->ODR = 3<<14;
-	  }
+
 
 	  int i;
 
 	  //The rightmost LED is in use by the Piezo buzzer, don't heck with it yo
 	  /* play the tune defined in the array Song */
-//	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
-//	  {
-//		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
-//	  }
+	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
+	  {
+		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+	  }
 
 //	  HAL_Delay(1000); // Delay for 1000 milliseconds (1 second)
 

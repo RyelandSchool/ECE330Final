@@ -1,8 +1,8 @@
-../Core/Src/main.c:101:5:main	16	static
-../Core/Src/main.c:215:6:SystemClock_Config	88	static
-../Core/Src/main.c:269:13:MX_TIM7_Init	16	static
-../Core/Src/main.c:307:13:MX_GPIO_Init	56	static
-../Core/Src/main.c:398:6:Play_Note	24	static
-../Core/Src/main.c:413:6:Error_Handler	4	static,ignoring_inline_asm
-../Core/Src/main.c:423:6:Seven_Segment_Digit	16	static
-../Core/Src/main.c:443:6:Seven_Segment	24	static
+../Core/Src/main.c:101:5:main	24	static
+../Core/Src/main.c:198:6:SystemClock_Config	88	static
+../Core/Src/main.c:252:13:MX_TIM7_Init	16	static
+../Core/Src/main.c:290:13:MX_GPIO_Init	56	static
+../Core/Src/main.c:381:6:Play_Note	24	static
+../Core/Src/main.c:396:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:406:6:Seven_Segment_Digit	16	static
+../Core/Src/main.c:426:6:Seven_Segment	24	static

@@ -184,6 +184,27 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+	ADC1->SQR3 = 1;
+	ADC1->CR2 |= 1<<30;
+	int myVar = ADC1->DR;
+	const int DELIM = 512;
+	if(myVar > 0 && myVar < DELIM){
+	  GPIOD->ODR = 2 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*2){
+	  GPIOD->ODR = 3<<2 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*3){
+	  GPIOD->ODR = 3<<4 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*4){
+	  GPIOD->ODR = 3<<6 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*5){
+	  GPIOD->ODR = 3<<8 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*6){
+	  GPIOD->ODR = 3<<10 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*7){
+	  GPIOD->ODR = 3<<12 | (GPIOD->ODR & 1);
+	} else if (myVar < DELIM*8){
+	  GPIOD->ODR = 3<<14 | (GPIOD->ODR & 1);
+	}
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
@@ -214,6 +235,7 @@ void TIM7_IRQHandler(void)
 
 		if (Note <= TONE) // When the TONE ramp counter reaches the desired result divisor, toggle the output
 		{
+			int myval = GPIOD->ODR;
 			GPIOD->ODR ^= 1; // Toggle the piezo buzzer output
 			TONE = 0; // Reset the TONE ramp counter to zero
 		}
@@ -222,6 +244,7 @@ void TIM7_IRQHandler(void)
 	{
 		TONE = 0; // Reset the TONE ramp counter to zero
 	}
+
 
 
   /* USER CODE END TIM7_IRQn 0 */
