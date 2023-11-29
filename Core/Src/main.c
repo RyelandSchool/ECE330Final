@@ -62,6 +62,8 @@ static void MX_TIM7_Init(void);
 void Seven_Segment_Digit (unsigned char digit, unsigned char hex_char);
 void Seven_Segment(unsigned int HexValue);
 
+#define NUM_NOTES 68
+#define NUM_DESCRIPTORS 3
 
 
 /* USER CODE BEGIN PFP */
@@ -78,19 +80,47 @@ void Play_Note(int note,int size,int tempo,int space);
 int TONE = 0;
 int Note = 0;
 
-int Song[100][3] =
+int Song[NUM_NOTES][NUM_DESCRIPTORS] =
 {
 		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
 		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
 		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
 		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
-//		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
-//		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
-//		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
-//		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
+		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
+		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
+		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
+		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
 };
+
+// Finds the smollest note in the song
+int smol(int song[NUM_NOTES][NUM_DESCRIPTORS]){
+	if(song == NULL){
+		return -1;
+	}
+
+	int smollest = 99999;
+	for(int i = 0; i < NUM_NOTES; i++){
+		smollest = (smollest < song[i][0])? smollest : song[i][0];
+	}
+
+	return smollest;
+}
+
+// Finds the beegest note in the song
+int beeg(int song[NUM_NOTES][NUM_DESCRIPTORS]){
+	if(song == NULL){
+		return -1;
+	}
+
+	int beegest = -1;
+	for(int i = 0; i < NUM_NOTES; i++){
+		beegest = (beegest > song[i][0])? beegest : song[i][0];
+	}
+
+	return beegest;
+}
 
 /* USER CODE END 0 */
 
@@ -149,11 +179,11 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  int smallest = smol(Song);
+  int biggest = beeg(Song);
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-
-
   while (1)
   {
 	  Seven_Segment(0x5AFE0000);
@@ -163,17 +193,6 @@ int main(void)
 
 	  int myVar = ADC1->DR;
 
-	  /*We need to make a range to switch so there are only
-	   * 2 LEDS on at once....*/
-//	  if(myVar > 2000){
-//		  GPIOD->ODR = 0xff00;
-//	  } else {
-//		  GPIOD->ODR = 0x00ff;
-//	  }
-
-	   // Moving the paddle around based on ADC movement
-
-
 	  int i;
 
 	  //The rightmost LED is in use by the Piezo buzzer, don't heck with it yo
@@ -182,8 +201,6 @@ int main(void)
 	  {
 		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
 	  }
-
-//	  HAL_Delay(1000); // Delay for 1000 milliseconds (1 second)
 
     /* USER CODE END WHILE */
 

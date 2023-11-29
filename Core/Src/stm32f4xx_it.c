@@ -184,6 +184,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+	//Move the paddle around based on the value of the ADC
 	ADC1->SQR3 = 1;
 	ADC1->CR2 |= 1<<30;
 	int myVar = ADC1->DR;
@@ -226,7 +227,6 @@ void SysTick_Handler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
-
 
 	TONE++; // Increment tone ramp to divide 125Khz down to desire frequency
 
