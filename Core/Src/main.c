@@ -188,18 +188,34 @@ int main(void)
   {
 	  Seven_Segment(0x5AFE0000);
 
-	  ADC1->SQR3 = 1;
-	  ADC1->CR2 |= 1<<30;
-
-	  int myVar = ADC1->DR;
-
 	  int i;
+	  float incr = (biggest - smallest)/8;
+
 
 	  //The rightmost LED is in use by the Piezo buzzer, don't heck with it yo
 	  /* play the tune defined in the array Song */
 	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
 	  {
+		  int myVar = Song[i][0];
+			if(myVar < incr+smallest){
+				Seven_Segment(0x00000001);
+			} else if (myVar <= incr*2+smallest){
+				Seven_Segment(0x00000020);
+			} else if (myVar <= incr*3+smallest){
+				Seven_Segment(0x00000300);
+			} else if (myVar <= incr*4+smallest){
+				Seven_Segment(0x00004000);
+			} else if (myVar <= incr*5+smallest){
+				Seven_Segment(0x00050000);
+			} else if (myVar <= incr*6+smallest){
+				Seven_Segment(0x00600000);
+			} else if (myVar <= incr*7+smallest){
+				Seven_Segment(0x07000000);
+			} else {
+				Seven_Segment(0x80000000);
+			}
 		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+
 	  }
 
     /* USER CODE END WHILE */

@@ -228,6 +228,7 @@ void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
 
+
 	TONE++; // Increment tone ramp to divide 125Khz down to desire frequency
 
 	if (Note > 0) // If a note is to be played, generate it. 0 is a rest or silence.
