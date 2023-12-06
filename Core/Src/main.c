@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_host.h"
+#include "stdlib.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -62,7 +63,7 @@ static void MX_TIM7_Init(void);
 void Seven_Segment_Digit (unsigned char digit, unsigned char hex_char);
 void Seven_Segment(unsigned int HexValue);
 
-#define NUM_NOTES 68
+#define NUM_NOTES 34
 #define NUM_DESCRIPTORS 3
 
 
@@ -87,10 +88,10 @@ int Song[NUM_NOTES][NUM_DESCRIPTORS] =
 		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
 		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
-		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
-		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
-		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
-		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
+//		{E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0}, {E5,_8th,0},{D5,_16th,0},{A4,_16th,0},{A4,_8th,0},{F4,_8th,0},
+//		{C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0}, {C5,_8th,0},{B4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},
+//		{B4,_8th,0},{A4,_16th,0},{F4,_16th,0},{F4,_8th,0},{D4,_8th,0},{B3,half,10},
+//		{A3,_8th,10},{B3,_8th,10},{C4,_8th,10},{D4,_8th,10},{E4,_8th,10},{F4,_8th,10},{G4,_8th,10},{A4,_8th,10},
 
 };
 
@@ -122,6 +123,8 @@ int beeg(int song[NUM_NOTES][NUM_DESCRIPTORS]){
 	return beegest;
 }
 
+//Will return an int for which seven segment display to
+//display too based on the value of myVar
 int display(int myVar, int incr, int smallest){
 	if(myVar == 0){
 		return -1;
@@ -205,44 +208,133 @@ int main(void)
   int smallest = smol(Song);
   int biggest = beeg(Song);
 
-
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  //Setting up variables for the beginning of the game
 	  Seven_Segment(0x5AFE0000);
-
-	  int i;
+	  int delay = 1000;
 	  float incr = (biggest - smallest)/8;
+	  int score = 0;
+	  int score_hex_conv = 0;
+	  int lives = 5;
+
+	  uint32_t right_mid = GPIOC->IDR & 0x0400;
+	  int start = 0;
+	  if(right_mid == 0){
+		  start = 1;
+	  }
+
+
+	  //Play the game until the user loses
+	  while(start){
+		  int i;
 
 
 	  //The rightmost LED is in use by the Piezo buzzer, don't heck with it yo
 	  /* play the tune defined in the array Song */
 	  for (i = 0;i<(sizeof(Song)/sizeof(Song[0]));i++) // determine number of elements in array for loop maximum
 	  {
-		  //FIXME: When there are two notes in the same spot, it gets buggy
-		  //FIXME: Also, the lines below will cause indexing errors!
+		  //Finding the next notes
 	      int myVar = Song[i][0];
 		  int next1 = Song[i+1][0];
 		  int next2 = Song[i+2][0];
 		  int next3 = Song[i+3][0];
 
-		  int pos = display(myVar, incr, smallest);
-		  int pos1 = display(next1, incr, smallest);
-		  int pos2 = display(next2, incr, smallest);
+		  //Finding where the next note should go
 		  int pos3 = display(next3, incr, smallest);
+		  int pos2 = display(next2, incr, smallest);
+		  int pos1 = display(next1, incr, smallest);
+		  int pos = display(myVar, incr, smallest);
 
+		  //Displaying the next note to the 7 seg display
 		  Seven_Segment(0x0);
-		  Seven_Segment_Digit(pos, 0xb);
-		  Seven_Segment_Digit(pos1, 0x1);
-		  Seven_Segment_Digit(pos2, 0x2);
 		  Seven_Segment_Digit(pos3, 0x3);
+		  Seven_Segment_Digit(pos2, 0x2);
+		  Seven_Segment_Digit(pos1, 0x1);
+		  Seven_Segment_Digit(pos, 0xb);
 
-		  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
-//		  HAL_Delay(1000);
+		  // Mask out the last bit
+		  HAL_Delay(delay);
+		  int position = GPIOD->ODR & ~0x1;
+
+		  //Translate current sevent segment display
+		  // to a 16 bit comparable to paddle
+		  switch(pos){
+		  case 0:
+			  pos = 0x2;
+			  break;
+
+		  case 1:
+			  pos = 3<<2;
+			  break;
+
+		  case 2:
+		  	  pos = 3<<4;
+		  	  break;
+
+		  case 3:
+			  pos = 3<<6;
+			  break;
+
+		  case 4:
+			  pos = 3<<8;
+			  break;
+
+		  case 5:
+			  pos = 3<<10;
+			  break;
+
+		  case 6:
+			  pos = 3<<12;
+			  break;
+
+		  case 7:
+			  pos = 3<<14;
+			  break;
+
+		  default:
+			  Seven_Segment(0xDEADBEEF);
+			  break;
+		  }
+
+		  //Checks if the paddle is on the correct note
+		  if(pos == position){
+			  Play_Note(Song[i][0],Song[i][1],3200,Song[i][2]); // Call function to play each note
+			  score++;
+			  score_hex_conv++;
+			  if(score_hex_conv % 9 == 0){
+				  score += 6;
+			  }
+		  }else if(pos != position){
+			  Play_Note(A1,_4th,3200,0); // Call function to play each note
+
+			  lives--;
+		  }
+/*		  Seven_Segment(0x0);
+		  Seven_Segment_Digit(pos3, 0x3);
+		  Seven_Segment_Digit(pos2, 0x2);
+		  Seven_Segment_Digit(pos1, 0x1);
+		  Seven_Segment_Digit(pos, 0xb);*/
+
+		  //Breaks if the user loses all of their lives
+		  if(lives <= 0){
+			  break;
+		  }
+
+
+	  }
+	  delay /= 2;
+
+	  //Break if the user loses all of their lives
+	  if(lives <= 0){
+		  Seven_Segment(score);
+		  HAL_Delay(5000);
+		  break;
 	  }
 
+	  }
     /* USER CODE END WHILE */
 
   }

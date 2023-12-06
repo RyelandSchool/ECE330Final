@@ -185,11 +185,11 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
 	//Move the paddle around based on the value of the ADC
-	ADC1->SQR3 = 1;
+	ADC1->SQR3 = 3;
 	ADC1->CR2 |= 1<<30;
 	int myVar = ADC1->DR;
 	const int DELIM = 512;
-	if(myVar > 0 && myVar < DELIM){
+ 	if(myVar > 0 && myVar < DELIM){
 	  GPIOD->ODR = 2 | (GPIOD->ODR & 1);
 	} else if (myVar < DELIM*2){
 	  GPIOD->ODR = 3<<2 | (GPIOD->ODR & 1);
